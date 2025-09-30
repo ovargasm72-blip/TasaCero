@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculadora Tasa Cero - Calcule comisiones y divisiones de pagos">
+    <title>Calculadora Tasa Cero</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2d74da;
+            --accent-color: #ffcc00;
+            --light-color: #f8fafc;
+            --dark-color: #2d3748;
+            --success-color: #38a169;
+            --danger-color: #e53e3e;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+        
+        .currency-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background-color: var(--light-color);
+            transition: transform 0.3s ease;
+        }
+        
+        .currency-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .currency-symbol {
+            position: absolute;
+            left: 12px;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 12px 12px 30px;
+            border: 1px solid #cbd5e0;
+            border-radius: var(--border-radius);
+            background-color: white;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(45, 116, 218, 0.2);
+        }
+        
+        .btn-calculate {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .btn-calculate:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-item label {
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .result-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+        
+        .divisions-section {
+            margin-top: 25px;
+        }
+        
+        .divisions-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .division-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .division-item {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background-color: white;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .division-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .division-item label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .division-value {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        .btn-action {
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        #btnLimpiar {
+            background-color: var(--accent-color);
+            color: var(--dark-color);
+        }
+        
+        #btnLimpiar:hover {
+            background-color: #e6b800;
+            transform: translateY(-2px);
+        }
+        
+        #btnSalir {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        #btnSalir:hover {
+            background-color: #c53030;
+            transform: translateY(-2px);
+        }
+        
+        .status-section {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        
+        .status-message {
+            font-weight: bold;
+            padding: 10px;
+            border-radius: var(--border-radius);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .success {
+            background-color: rgba(56, 161, 105, 0.1);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+        
+        .error {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .results {
+                grid-template-columns: 1fr;
+            }
+            
+            .division-results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .division-results {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculadora Tasa Cero</h1>
+            <p class="subtitle">Calcule comisiones y divisiones de pagos para sus transacciones</p>
+        </header>
+        
+        <div class="currency-section">
+            <h2>Tasa Cero en Colones (₡)</h2>
+            <div class="input-group">
+                <label for="txtMonto1">Monto en Colones:</label>
+                <div class="input-with-icon">
+                    <span class="currency-symbol">₡</span>
+                    <input type="text" id="txtMonto1" placeholder="0.00">
+                </div>
+            </div>
+            <button id="cmdCalcularColones" class="btn-calculate">Calcular Colones</button>
+            
+            <div class="results">
+                <div class="result-item">
+                    <label>Comisión traslado o cancelación anticipada:</label>
+                    <div id="Lb1ComTras" class="result-value">₡0.00</div>
+                </div>
+                <div class="result-item">
+                    <label>Comisión Adelanto de Efectivo:</label>
+                    <div id="Lb1ComAdel" class="result-value">₡0.00</div>
+                </div>
+            </div>
+            
+            <div class="divisions-section">
+                <h3>Divisiones en Colones</h3>
+                <div class="division-results">
+                    <div class="division-item">
+                        <label>3 meses:</label>
+                        <div id="Label2" class="division-value">₡0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>4 meses:</label>
+                        <div id="Label3" class="division-value">₡0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>6 meses:</label>
+                        <div id="Label4" class="division-value">₡0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>9 meses:</label>
+                        <div id="Label5" class="division-value">₡0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>10 meses:</label>
+                        <div id="Label6" class="division-value">₡0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>12 meses:</label>
+                        <div id="Label7" class="division-value">₡0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>24 meses:</label>
+                        <div id="Label8" class="division-value">₡0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>36 meses:</label>
+                        <div id="Label9" class="division-value">₡0.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="currency-section">
+            <h2>Tasa Cero en Dólares ($)</h2>
+            <div class="input-group">
+                <label for="txtMonto2">Monto en Dólares:</label>
+                <div class="input-with-icon">
+                    <span class="currency-symbol">$</span>
+                    <input type="text" id="txtMonto2" placeholder="0.00">
+                </div>
+            </div>
+            <button id="cmdCalcularDolares" class="btn-calculate">Calcular Dólares</button>
+            
+            <div class="results">
+                <div class="result-item">
+                    <label>Comisión traslado o cancelación anticipada:</label>
+                    <div id="Lb3ComTras" class="result-value">$0.00</div>
+                </div>
+                <div class="result-item">
+                    <label>Comisión Adelanto de Efectivo:</label>
+                    <div id="Lb3ComAdel" class="result-value">$0.00</div>
+                </div>
+            </div>
+            
+            <div class="divisions-section">
+                <h3>Divisiones en Dólares</h3>
+                <div class="division-results">
+                    <div class="division-item">
+                        <label>3 meses:</label>
+                        <div id="Label29" class="division-value">$0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>4 meses:</label>
+                        <div id="Label30" class="division-value">$0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>6 meses:</label>
+                        <div id="Label31" class="division-value">$0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>9 meses:</label>
+                        <div id="Label32" class="division-value">$0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>10 meses:</label>
+                        <div id="Label33" class="division-value">$0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>12 meses:</label>
+                        <div id="Label34" class="division-value">$0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>24 meses:</label>
+                        <div id="Label35" class="division-value">$0.00</div>
+                    </div>
+                    <div class="division-item">
+                        <label>36 meses:</label>
+                        <div id="Label36" class="division-value">$0.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="btnLimpiar" class="btn-action">Limpiar</button>
+            <button id="btnSalir" class="btn-action">Salir</button>
+        </div>
+        
+        <div class="status-section">
+            <div id="Label220" class="status-message hidden">Cálculos completados correctamente</div>
+            <div id="Label230" class="status-message error">Ingrese un monto para calcular</div>
+        </div>
+        
+        <footer>
+            <p>Calculadora Tasa Cero &copy; 2026 - Accesible desde cualquier dispositivo</p>
+        </footer>
+    </div>
+
+    <script>
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar botones
+            document.getElementById('btnLimpiar').addEventListener('click', btnLimpiar_Click);
+            document.getElementById('btnSalir').addEventListener('click', btnSalir_Click);
+            document.getElementById('cmdCalcularColones').addEventListener('click', cmdCalcularColones_Click);
+            document.getElementById('cmdCalcularDolares').addEventListener('click', cmdCalcularDolares_Click);
+            
+            // Inicializar estado
+            actualizarEstado('Por favor, ingrese un monto para calcular', 'error');
+            
+            // Permitir usar Enter en los campos de texto
+            document.getElementById('txtMonto1').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    cmdCalcularColones_Click();
+                }
+            });
+            
+            document.getElementById('txtMonto2').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    cmdCalcularDolares_Click();
+                }
+            });
+        });
+
+        function actualizarEstado(mensaje, tipo) {
+            const label220 = document.getElementById('Label220');
+            const label230 = document.getElementById('Label230');
+            
+            if (tipo === 'success') {
+                label220.textContent = mensaje;
+                label220.classList.remove('hidden');
+                label220.classList.remove('error');
+                label220.classList.add('success');
+                label230.classList.add('hidden');
+            } else {
+                label230.textContent = mensaje;
+                label230.classList.remove('hidden');
+                label230.classList.remove('success');
+                label230.classList.add('error');
+                label220.classList.add('hidden');
+            }
+        }
+
+        function btnLimpiar_Click() {
+            // Limpiar los cuadros de texto
+            document.getElementById('txtMonto1').value = '';
+            document.getElementById('txtMonto2').value = '';
+            
+            // Limpiar las etiquetas de resultado
+            document.getElementById('Lb1ComTras').textContent = '₡0.00';
+            document.getElementById('Lb1ComAdel').textContent = '₡0.00';
+            document.getElementById('Lb3ComTras').textContent = '$0.00';
+            document.getElementById('Lb3ComAdel').textContent = '$0.00';
+            
+            // Limpiar las etiquetas de las divisiones de colones
+            for (let i = 2; i <= 9; i++) {
+                document.getElementById('Label' + i).textContent = '₡0.00';
+            }
+            
+            // Limpiar las etiquetas de las divisiones de dólares
+            for (let i = 29; i <= 36; i++) {
+                document.getElementById('Label' + i).textContent = '$0.00';
+            }
+            
+            // Actualizar estado
+            actualizarEstado('Por favor, ingrese un monto para calcular', 'error');
+        }
+
+        function cmdCalcularColones_Click() {
+            const montoInput = document.getElementById('txtMonto1').value;
+            // Eliminar cualquier carácter no numérico excepto el punto decimal
+            const montoTexto = montoInput.replace(/[^\d.]/g, '');
+            
+            if (montoTexto && !isNaN(parseFloat(montoTexto)) && parseFloat(montoTexto) > 0) {
+                const montoColones = parseFloat(montoTexto);
+                
+                // Calcula el 3% y 4% para colones
+                document.getElementById('Lb1ComTras').textContent = '₡' + (montoColones * 0.03).toFixed(2);
+                document.getElementById('Lb1ComAdel').textContent = '₡' + (montoColones * 0.04).toFixed(2);
+                
+                // Realiza las divisiones
+                document.getElementById('Label2').textContent = '₡' + (montoColones / 3).toFixed(2);
+                document.getElementById('Label3').textContent = '₡' + (montoColones / 4).toFixed(2);
+                document.getElementById('Label4').textContent = '₡' + (montoColones / 6).toFixed(2);
+                document.getElementById('Label5').textContent = '₡' + (montoColones / 9).toFixed(2);
+                document.getElementById('Label6').textContent = '₡' + (montoColones / 10).toFixed(2);
+                document.getElementById('Label7').textContent = '₡' + (montoColones / 12).toFixed(2);
+                document.getElementById('Label8').textContent = '₡' + (montoColones / 24).toFixed(2);
+                document.getElementById('Label9').textContent = '₡' + (montoColones / 36).toFixed(2);
+                
+                // Actualizar estado
+                actualizarEstado('Cálculos para colones completados correctamente', 'success');
+            } else {
+                actualizarEstado('Por favor, ingresa un monto válido en colones.', 'error');
+            }
+        }
+
+        function cmdCalcularDolares_Click() {
+            const montoInput = document.getElementById('txtMonto2').value;
+            // Eliminar cualquier carácter no numérico excepto el punto decimal
+            const montoTexto = montoInput.replace(/[^\d.]/g, '');
+            
+            if (montoTexto && !isNaN(parseFloat(montoTexto)) && parseFloat(montoTexto) > 0) {
+                const montoDolares = parseFloat(montoTexto);
+                
+                // Calcular los valores correspondientes en dólares
+                document.getElementById('Lb3ComTras').textContent = '$' + (montoDolares * 0.03).toFixed(2);
+                document.getElementById('Lb3ComAdel').textContent = '$' + (montoDolares * 0.04).toFixed(2);
+                
+                // Calcular las divisiones de monto en dólares
+                document.getElementById('Label29').textContent = '$' + (montoDolares / 3).toFixed(2);
+                document.getElementById('Label30').textContent = '$' + (montoDolares / 4).toFixed(2);
+                document.getElementById('Label31').textContent = '$' + (montoDolares / 6).toFixed(2);
+                document.getElementById('Label32').textContent = '$' + (montoDolares / 9).toFixed(2);
+                document.getElementById('Label33').textContent = '$' + (montoDolares / 10).toFixed(2);
+                document.getElementById('Label34').textContent = '$' + (montoDolares / 12).toFixed(2);
+                document.getElementById('Label35').textContent = '$' + (montoDolares / 24).toFixed(2);
+                document.getElementById('Label36').textContent = '$' + (montoDolares / 36).toFixed(2);
+                
+                // Actualizar estado
+                actualizarEstado('Cálculos para dólares completados correctamente', 'success');
+            } else {
+                actualizarEstado('Por favor, ingrese un monto válido en dólares', 'error');
+            }
+        }
+
+        function btnSalir_Click() {
+            if (confirm('¿Está seguro de que desea salir?')) {
+                // En un navegador web, podemos intentar cerrar la ventana
+                // o al menos redirigir a una página en blanco
+                window.close();
+                
+                // Si window.close() no funciona (depende del navegador)
+                // Mostramos un mensaje alternativo
+                setTimeout(function() {
+                    alert('Puede cerrar esta pestaña o ventana del navegador.');
+                }, 100);
+            }
+        }
+    </script>
+</body>
+</html>
